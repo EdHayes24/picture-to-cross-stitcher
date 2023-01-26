@@ -21,7 +21,8 @@ class imgObj:
 
     filepath: str
     img: Image = field(init=False)
-    dimensions: tuple = field(init=False)
+    dim_x: int = field(init=False)
+    dim_y: int = field(init=False)
     pixels: Image = field(init=False)
 
     def open_image_file(self):
@@ -68,7 +69,8 @@ class imgObj:
             print(f"imgObj.get_image_dimensions ERROR: {e}")
         else:
             print(f"Image {self.filepath} has dimensions {dimensions}")
-            self.dimensions = dimensions
+            self.dim_x = int(dimensions[0])
+            self.dim_y = int(dimensions[1])
 
     def __post_init__(self):
         self.open_image_file()
