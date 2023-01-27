@@ -86,6 +86,7 @@ def most_divergent_colours(
     # Calculate Metric For each combination
     color_proximity = match_method(colour, col_options)
     # maximise color_proximity calculated
+    # lookup optimisation functions
 
 
 if __name__ == "__main__":
