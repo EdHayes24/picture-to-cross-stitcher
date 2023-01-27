@@ -10,8 +10,10 @@ __status__ = "Development"
 import statistics
 from dataclasses import field
 from enum import Enum, auto
+from typing import Callable
 
 import numpy as np
+from PIL import Image
 
 from imgObj_class import imgObj
 from user_inputs import get_user_option
@@ -85,48 +87,36 @@ class pic2pix:
         for each bin of pixels, compute RGB: mean, mode, stdev and make a decision\n
         return decision RGB value
         """
+        # Create pixel group reference ids
         x_range = [int(i + x_start) for i in range(self.bin_size)]
         y_range = [int(i + y_start) for i in range(self.bin_size)]
-        print(x_range)
-        print(y_range)
-        if x_start > 8:
-            A = 1 / 0
+        # Retrieve Pixel Group R, G, B's
         pix_r = [self.original.pixels[i, j][0] for i in x_range for j in y_range]
         pix_g = [self.original.pixels[i, j][1] for i in x_range for j in y_range]
         pix_b = [self.original.pixels[i, j][2] for i in x_range for j in y_range]
+        # Calculate mean, stdv, mode of pixel group
         mean_rgb = self.calc_mean_rgb_pixel_group(pix_r, pix_g, pix_b)
         stdv_rgb = self.calc_stdv_rgb_pixel_group(pix_r, pix_g, pix_b)
         mode_rgb = self.calc_mode_rgb_pixel_group(pix_r, pix_g, pix_b)
-        print(f"{x_start},{y_start}:{x_start+self.bin_size},{y_start+self.bin_size}")
-        print(mean_rgb)
-        print(stdv_rgb)
-        print(mode_rgb)
+        if sum(stdv_rgb) > 85:
+            return mode_rgb
+        else:
+            return mean_rgb
 
     def pixel_iterator(self):
-        #
-        x_start = 0
-        y_start = 0
-        self.pixel_interpolator(x_start, y_start)
-        for i in range(int(self.original.dim_x / self.bin_size)):
-            x_start += self.bin_size
-            for j in range(int(self.original.dim_y / self.bin_size)):
-                print(f"x:{x_start}, y:{y_start}")
-                y_start += self.bin_size
-                self.pixel_interpolator(x_start, y_start)
-
-
-# dd = desired_dimension_selector(common_factors(im.size[0], im.size[1]), im.size)
-# print(dd)
-# # With selected dimensions, make blocks of data in matrix:
-# x_size = int(im.size[0] / dd[0])
-# y_size = int(im.size[1] / dd[1])
-# pix_r = [pix[i,j][0] for i in range(x_size) for j in range(y_size)]
-# pix_g = [pix[i,j][1] for i in range(x_size) for j in range(y_size)]
-# pix_b = [pix[i,j][2] for i in range(x_size) for j in range(y_size)]
-# # Calc Mean, Stdev, mode. If sd is high, select mode instead?
-# mean_rgb = (sum(pix_r) / len(pix_r), sum(pix_g) / len(pix_g), sum(pix_b) / len(pix_b))
-# stdv_rgb = (np.std(pix_r), np.std(pix_g), np.std(pix_b))
-# mode_rgb = (statistics.mode(pix_r),statistics.mode(pix_g),statistics.mode(pix_b))
-# print(mean_rgb)
-# print(stdv_rgb)
-# print(mode_rgb)
+        """
+        Loops over Pixels in original image to create groups\n
+        For Each group executes pic2pix.pixel_interpolator()\n
+        Returns array of RGB values stored in pic2pix.pixel_rgb
+        """
+        height = self.pixel_dims[1]
+        width = self.pixel_dims[0]
+        channel = 3
+        arr = np.full((height, width, channel), [0, 0, 0], dtype=("uint8"))
+        for i in range(width):
+            for j in range(height):
+                x_start = i * self.bin_size
+                y_start = j * self.bin_size
+                rgb_out = self.pixel_interpolator(x_start, y_start)
+                arr[j, i] = list(rgb_out)
+        self.pixel_rgb = arr
