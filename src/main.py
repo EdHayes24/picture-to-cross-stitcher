@@ -9,12 +9,9 @@ import numpy as np
 from colorthief import ColorThief
 from PIL import Image
 
-from colour_match_extract import (
-    colour_similarity_riemersma,
-    find_closest_colour,
-    get_common_colours,
-    rgb_colour_matcher,
-)
+from colour_match_extract import (colour_similarity_riemersma,
+                                  find_closest_colour, get_common_colours,
+                                  rgb_colour_matcher)
 from imgObj_class import imgObj
 from numerical_features import common_features, find_factors
 from picture_to_pixels import pic2pix
@@ -47,10 +44,10 @@ def main():
         for j in range(pix.pixel_dims[1]):
             curr_rgb = pix.pixel_rgb[j, i]
             new_rgb = find_closest_colour(curr_rgb, cc, colour_similarity_riemersma)
-            print(new_rgb)
             pix.pixel_rgb[j, i] = new_rgb
     im2 = Image.fromarray(pix.pixel_rgb)
-    im2.save("./data/pop-test-colour-matched.jpeg")
+    im3 = im2.resize(size=(pic.dim_x, pic.dim_y))
+    im3.save("./data/pop-test-colour-matched-resized.jpeg")
 
     # Visualise Pixel Pattern
 
