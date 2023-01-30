@@ -19,15 +19,23 @@ Colour matching was first implemented by minimising distances in the 3-D space o
 For example:
 
 Target RGB $= (110,150,13)$
+
 Optn A RGB $= (111,150,25)$
+
 Optn B RGB $= (100,156,10)$
+
 match measure A = $\sqrt{(110-111)^2 + (150-150)^2 + (13-25)^2} = \sqrt{145}$
+
 match measure B = $\sqrt{(110-100)^2 + (150-156)^2 + (13-10)^2} = \sqrt{145}$
+
 
 Further investigation yields the inadequacies of RGB 3D spatial distance measures alone to replicate colour similarities as observed by humans. For those interested, conflicting methods around CIE L*a*b* and CIE L*u*v* to compute percieved colour from RGB values exist with deficiencies in each approach - an article by Thiadmer Riemersma on the efficacies of the approaches can be found here: https://www.compuphase.com/cmetric.htm 
 
 In the above article, the author proposes a similar euclidean norm with additional weighting based on the magnitude of red R values in the target and proposed colours. This approach is underpinned by the notion that human differences in colour perception of red in RGB follows a logarithmic scale and as such a euclidean norm alone will not capture these differences. This method has been implemented in `colour_match_extract.py - colour_similarity_riemersma` - it doesn't purport to wholly accurate but does represent a simplistic improvement on the spatial norm approach alone.
 
 While this produces satisfactory results, the response can be hindered by utilisation of the most frequent colours in the original image only. To improve this, optimisation functions to maximise colour divergence in the colours selected are to be implemented to help avoid explicitly defining all desired 23 colours as being shades of light-blue (or grey when in Manchester) because of a patch of sky in the original image. This is the subject of ongoing development.
+
+## Pixels to Patterns
+In order to convert the produced images to usable Cross-stitch patterns, the addition of symbols to each colour pixel and a corresponding keycode is required. This is the subject of ongoing work. 
 ## Thread Databases
 Subject of future work to provide a reference MySQL database of RGB:thread colours

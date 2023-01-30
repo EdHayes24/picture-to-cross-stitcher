@@ -10,7 +10,8 @@ from colorthief import ColorThief
 from PIL import Image
 
 from colour_match_extract import (
-    colour_match_riemersma,
+    colour_similarity_riemersma,
+    find_closest_colour,
     get_common_colours,
     rgb_colour_matcher,
 )
@@ -45,7 +46,8 @@ def main():
     for i in range(pix.pixel_dims[0]):
         for j in range(pix.pixel_dims[1]):
             curr_rgb = pix.pixel_rgb[j, i]
-            new_rgb = colour_match_riemersma(curr_rgb, cc)
+            new_rgb = find_closest_colour(curr_rgb, cc, colour_similarity_riemersma)
+            print(new_rgb)
             pix.pixel_rgb[j, i] = new_rgb
     im2 = Image.fromarray(pix.pixel_rgb)
     im2.save("./data/pop-test-colour-matched.jpeg")
