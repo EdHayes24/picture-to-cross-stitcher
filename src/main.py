@@ -9,9 +9,12 @@ import numpy as np
 from colorthief import ColorThief
 from PIL import Image
 
-from colour_match_extract import (colour_similarity_riemersma,
-                                  find_closest_colour, get_common_colours,
-                                  rgb_colour_matcher)
+from colour_match_extract import (
+    colour_similarity_riemersma,
+    find_closest_colour,
+    get_common_colours,
+    rgb_colour_matcher,
+)
 from imgObj_class import imgObj
 from numerical_features import common_features, find_factors
 from picture_to_pixels import pic2pix
@@ -36,18 +39,30 @@ def main():
     pix = pic2pix(image=pic, pixel_dims=pixel_res)
     pix.calc_bin_size()
     pix.pixel_iterator()
+    reps = pic.dim_x // pix.pixel_dims[0]
+    pix_arr_resize = np.repeat(np.repeat(pix.pixel_rgb, reps, axis=1), reps, axis=0)
     im = Image.fromarray(pix.pixel_rgb)
+    im_rs = Image.fromarray(pix_arr_resize)
     im.save("./data/pop-test.jpeg")
+    im_rs.save("./data/pop-test_rs.jpeg")
     # Color Match to thread database
-    cc = get_common_colours(filepath=fp, n_colours=15)
+    cc = get_common_colours(filepath=fp, n_colours=30)
     for i in range(pix.pixel_dims[0]):
         for j in range(pix.pixel_dims[1]):
             curr_rgb = pix.pixel_rgb[j, i]
             new_rgb = find_closest_colour(curr_rgb, cc, colour_similarity_riemersma)
             pix.pixel_rgb[j, i] = new_rgb
-    im2 = Image.fromarray(pix.pixel_rgb)
-    im3 = im2.resize(size=(pic.dim_x, pic.dim_y))
-    im3.save("./data/pop-test-colour-matched-resized.jpeg")
+    # Resize Array using double np.repeat()
+    reps = pic.dim_x // pix.pixel_dims[0]
+    pattern_pixels_large = np.repeat(
+        np.repeat(pix.pixel_rgb, reps, axis=1), reps, axis=0
+    )
+    print(pix.pixel_rgb)
+    print("\n#####################\n")
+    print(pattern_pixels_large)
+    im2 = Image.fromarray(pattern_pixels_large)
+    # im3 = im2.resize(size=(pic.dim_x, pic.dim_y))
+    im2.save("./data/pop-test-cm-rs.jpeg")
 
     # Visualise Pixel Pattern
 

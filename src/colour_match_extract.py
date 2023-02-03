@@ -20,7 +20,7 @@ def get_common_colours(filepath: str, n_colours: int):
     Returns: List of colours
     """
     color_thief = ColorThief(filepath)
-    palette = color_thief.get_palette(color_count=n_colours)
+    palette = color_thief.get_palette(color_count=n_colours, quality=1)
     return palette
 
 
